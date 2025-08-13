@@ -7,6 +7,7 @@ import com.laxios.userservice.dto.RegisterResponse;
 import com.laxios.userservice.entity.User;
 import com.laxios.userservice.repository.UserRepository;
 import com.laxios.userservice.service.UserService;
+import com.laxios.userservice.util.JwtUtil;
 import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
@@ -19,6 +20,7 @@ import java.util.UUID;
 public class UserServiceImpl implements UserService {
 
     private final UserRepository userRepository;
+    private final JwtUtil jwtUtil;
     private final BCryptPasswordEncoder passwordEncoder = new BCryptPasswordEncoder();
 
     @Override
@@ -55,6 +57,7 @@ public class UserServiceImpl implements UserService {
             throw  new IllegalArgumentException("Username or password is wrong!");
         }
 
-        return new LoginResponse(user.getId(), user.getName());
+        String token = jwtUtil.generateToken(user.getId(), user.getName());
+        return new LoginResponse(user.getId(), user.getName(), token);
     }
 }

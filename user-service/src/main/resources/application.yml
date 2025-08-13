@@ -7,3 +7,7 @@ spring:
     hibernate:
       ddl-auto: update
     show-sql: true
+
+jwt:
+  secret-key: 578KdC9YSr7/bAppwuooZwNjUvqxuvRgPNtKTprXDzM= # don't worry some random dumbass key
+  expiration-hr: 1
