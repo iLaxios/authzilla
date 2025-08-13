@@ -1,5 +1,7 @@
 package com.laxios.userservice.service.Impl;
 
+import com.laxios.userservice.dto.LoginRequest;
+import com.laxios.userservice.dto.LoginResponse;
 import com.laxios.userservice.dto.RegisterRequest;
 import com.laxios.userservice.dto.RegisterResponse;
 import com.laxios.userservice.entity.User;
@@ -9,6 +11,7 @@ import lombok.RequiredArgsConstructor;
 import org.springframework.security.crypto.bcrypt.BCryptPasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -34,5 +37,24 @@ public class UserServiceImpl implements UserService {
         userRepository.save(user);
 
         return new RegisterResponse(user.getId(), user.getName());
+    }
+
+    @Override
+    public LoginResponse loginUser(LoginRequest loginRequest) {
+
+        Optional<User> userOptional = userRepository.findByName(loginRequest.getName());
+
+        if(userOptional.isEmpty()) {
+            throw  new IllegalArgumentException("Username or password is wrong!");
+        }
+
+        User user = userOptional.get();
+        String userPassword = user.getPassword();
+
+        if(!passwordEncoder.matches(loginRequest.getPassword(), userPassword)) {
+            throw  new IllegalArgumentException("Username or password is wrong!");
+        }
+
+        return new LoginResponse(user.getId(), user.getName());
     }
 }
