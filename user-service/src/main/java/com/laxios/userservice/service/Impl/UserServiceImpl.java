@@ -1,9 +1,6 @@
 package com.laxios.userservice.service.Impl;
 
-import com.laxios.userservice.dto.LoginRequest;
-import com.laxios.userservice.dto.LoginResponse;
-import com.laxios.userservice.dto.RegisterRequest;
-import com.laxios.userservice.dto.RegisterResponse;
+import com.laxios.userservice.dto.*;
 import com.laxios.userservice.entity.User;
 import com.laxios.userservice.repository.UserRepository;
 import com.laxios.userservice.service.UserService;
@@ -59,5 +56,16 @@ public class UserServiceImpl implements UserService {
 
         String token = jwtUtil.generateToken(user.getId(), user.getName());
         return new LoginResponse(user.getId(), user.getName(), token);
+    }
+
+    public String verifyToken(JwtVerifyRequest request) {
+
+        String token = request.getToken();
+
+        if(!jwtUtil.validateToken(token)) {
+            throw new IllegalArgumentException("Invalid token");
+        }
+
+        return "Token verified successfully!";
     }
 }

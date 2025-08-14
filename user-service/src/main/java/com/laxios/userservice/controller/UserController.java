@@ -1,10 +1,7 @@
 package com.laxios.userservice.controller;
 
 
-import com.laxios.userservice.dto.LoginRequest;
-import com.laxios.userservice.dto.LoginResponse;
-import com.laxios.userservice.dto.RegisterRequest;
-import com.laxios.userservice.dto.RegisterResponse;
+import com.laxios.userservice.dto.*;
 import com.laxios.userservice.service.UserService;
 import jakarta.validation.Valid;
 import lombok.RequiredArgsConstructor;
@@ -32,5 +29,11 @@ public class UserController {
     public LoginResponse loginUser(@Valid @RequestBody LoginRequest request) {
         LoginResponse response = userService.loginUser(request);
         return response;
+    }
+
+    @PostMapping("/verify")
+    @ResponseStatus(HttpStatus.OK)
+    public String verifyJwt(@Valid @RequestBody JwtVerifyRequest request) {
+        return userService.verifyToken(request);
     }
 }
