@@ -3,6 +3,7 @@ package com.laxios.mfaservice.service.impl;
 import com.laxios.mfaservice.dto.SetupRequest;
 import com.laxios.mfaservice.service.MfaService;
 import com.laxios.mfaservice.util.JwtUtil;
+import com.laxios.mfaservice.util.TotpUtil;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
@@ -11,6 +12,7 @@ import org.springframework.stereotype.Service;
 public class MfaServiceImpl implements MfaService {
 
     private final JwtUtil jwtUtil;
+    private final TotpUtil totpUtil;
 
     public void setup(SetupRequest request) {
 
@@ -19,7 +21,14 @@ public class MfaServiceImpl implements MfaService {
         if(!jwtUtil.validateToken(token)) {
             throw new IllegalArgumentException("Invalid token");
         }
-        
+
+        try {
+            String userKey = totpUtil.generateSecret();
+            System.out.println("userKey " + userKey);
+
+        } catch (Exception e) {
+            throw new RuntimeException(e);
+        }
         System.out.println(request.getToken());
     }
 }
