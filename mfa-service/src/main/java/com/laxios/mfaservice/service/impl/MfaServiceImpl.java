@@ -1,6 +1,7 @@
 package com.laxios.mfaservice.service.impl;
 
 import com.laxios.mfaservice.dto.SetupRequest;
+import com.laxios.mfaservice.dto.SetupResponse;
 import com.laxios.mfaservice.entity.User;
 import com.laxios.mfaservice.repository.UserRepository;
 import com.laxios.mfaservice.service.MfaService;
@@ -19,7 +20,7 @@ public class MfaServiceImpl implements MfaService {
     private final TotpUtil totpUtil;
     private final UserRepository userRepository;
 
-    public void setup(SetupRequest request) {
+    public SetupResponse setup(SetupRequest request) {
 
         String token = request.getToken();
 
@@ -30,8 +31,6 @@ public class MfaServiceImpl implements MfaService {
         String userKey = "";
         try {
             userKey = totpUtil.generateSecret();
-            System.out.println("userKey " + userKey);
-
         } catch (Exception e) {
             throw new RuntimeException(e);
         }
@@ -39,12 +38,13 @@ public class MfaServiceImpl implements MfaService {
         String username = jwtUtil.getClaim(token, "username", String.class);
         String userIdStr = jwtUtil.getClaim(token, "sub", String.class);
         UUID userId = UUID.fromString(userIdStr);
-        System.out.println("name: " + username + "userId: " + userId);
-        System.out.println(request.getToken());
 
         userRepository.save(new User(
                 userId, userKey, username
         ));
+
+        String newToken = jwtUtil.generateToken(userId, username);
+        return new SetupResponse(newToken, userKey);
     }
 }
 

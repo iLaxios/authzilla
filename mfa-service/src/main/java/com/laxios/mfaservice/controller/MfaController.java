@@ -1,6 +1,8 @@
 package com.laxios.mfaservice.controller;
 
 import com.laxios.mfaservice.dto.SetupRequest;
+import com.laxios.mfaservice.dto.SetupResponse;
+import com.laxios.mfaservice.dto.VerifyRequest;
 import com.laxios.mfaservice.service.MfaService;
 import lombok.Data;
 import org.springframework.web.bind.annotation.PostMapping;
@@ -16,7 +18,12 @@ public class MfaController {
     private final MfaService mfaService;
 
     @PostMapping("/setup")
-    void setupMfa(@RequestBody SetupRequest request){
-        mfaService.setup(request);
+    SetupResponse setupMfa(@RequestBody SetupRequest request){
+        return mfaService.setup(request);
+    }
+
+    @PostMapping("/verify")
+    SetupResponse verifyCode(@RequestBody VerifyRequest request){
+        return mfaService.verify(request);
     }
 }

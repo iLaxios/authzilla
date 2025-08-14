@@ -10,3 +10,8 @@ spring:
 jwt:
   secret-key: 578KdC9YSr7/bAppwuooZwNjUvqxuvRgPNtKTprXDzM= # don't worry some random dumbass key
   expiration-hr: 1
+
+totp:
+    key-length: 16
+    time-step: 30
+    code-length: 6
