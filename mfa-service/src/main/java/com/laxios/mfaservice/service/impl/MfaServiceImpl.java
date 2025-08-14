@@ -2,6 +2,7 @@ package com.laxios.mfaservice.service.impl;
 
 import com.laxios.mfaservice.dto.SetupRequest;
 import com.laxios.mfaservice.dto.SetupResponse;
+import com.laxios.mfaservice.dto.VerifyRequest;
 import com.laxios.mfaservice.entity.User;
 import com.laxios.mfaservice.repository.UserRepository;
 import com.laxios.mfaservice.service.MfaService;
@@ -10,6 +11,7 @@ import com.laxios.mfaservice.util.TotpUtil;
 import lombok.Data;
 import org.springframework.stereotype.Service;
 
+import java.util.Optional;
 import java.util.UUID;
 
 @Service
@@ -45,6 +47,38 @@ public class MfaServiceImpl implements MfaService {
 
         String newToken = jwtUtil.generateToken(userId, username);
         return new SetupResponse(newToken, userKey);
+    }
+
+    public String verifyCode(VerifyRequest request) {
+
+        String token = request.getToken();
+        String code = request.getCode();
+
+        String userIdStr = jwtUtil.getClaim(token, "sub", String.class);
+        UUID userId = UUID.fromString(userIdStr);
+
+        Optional<User> userOptional = userRepository.findById(userId);
+        if(userOptional.isEmpty()) {
+            throw new IllegalArgumentException("No user found");
+        }
+
+        User user = userOptional.get();
+//        System.out.println("userKey is : " + user.getUserKey());
+        Boolean isVerified = false;
+        try {
+            isVerified = totpUtil.verifyToken(user.getUserKey(), code);
+        }
+        catch (Exception e) {
+            System.out.println(e.getMessage());
+        }
+
+        if(!isVerified) {
+            return "code is invalid";
+        }
+        else {
+            return "code is valid";
+        }
+
     }
 }
 

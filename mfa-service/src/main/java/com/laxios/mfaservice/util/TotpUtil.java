@@ -3,12 +3,14 @@ package com.laxios.mfaservice.util;
 import com.eatthepath.otp.TimeBasedOneTimePasswordGenerator;
 
 import javax.crypto.SecretKey;
+import javax.crypto.spec.SecretKeySpec;
 import java.security.SecureRandom;
 import java.time.Duration;
 import java.time.Instant;
 import java.util.Base64;
 
 import lombok.Data;
+import org.apache.commons.codec.binary.Base32;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -39,13 +41,29 @@ public class TotpUtil {
     }
 
     // Verify TOTP token
-    public  boolean verifyToken(String base64Secret, String token) throws Exception {
-        byte[] secretBytes = Base64.getDecoder().decode(base64Secret);
-        SecretKey key = new javax.crypto.spec.SecretKeySpec(secretBytes, "HmacSHA1");
+    public boolean verifyToken(String base32Secret, String token) throws Exception {
+        byte[] secretBytes = new Base32().decode(base32Secret); // Base32 decoding
+        SecretKey key = new SecretKeySpec(secretBytes, "HmacSHA1");
 
-        TimeBasedOneTimePasswordGenerator totp = new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(timeStep), digits);
-        int generated = totp.generateOneTimePassword(key, Instant.now());
-        return Integer.parseInt(token) == generated;
+        TimeBasedOneTimePasswordGenerator totp =
+                new TimeBasedOneTimePasswordGenerator(Duration.ofSeconds(timeStep), digits);
+
+        int inputCode;
+        try {
+            inputCode = Integer.parseInt(token);
+        } catch (NumberFormatException e) {
+            return false;
+        }
+
+        // Allow clock drift: previous, current, next
+        for (int offset = -1; offset <= 1; offset++) {
+            Instant time = Instant.now().plusSeconds(timeStep * offset);
+            int generated = totp.generateOneTimePassword(key, time);
+            if (inputCode == generated) {
+                return true;
+            }
+        }
+        return false;
     }
 }
 

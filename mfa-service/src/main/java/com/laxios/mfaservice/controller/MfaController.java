@@ -23,7 +23,7 @@ public class MfaController {
     }
 
     @PostMapping("/verify")
-    SetupResponse verifyCode(@RequestBody VerifyRequest request){
-        return mfaService.verify(request);
+    String verifyCode(@RequestBody VerifyRequest request){
+         return mfaService.verifyCode(request);
     }
 }
