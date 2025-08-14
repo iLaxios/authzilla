@@ -1,10 +1,7 @@
 package com.laxios.mfaservice.util;
 
 
-import io.jsonwebtoken.Jwts;
-import io.jsonwebtoken.ExpiredJwtException;
-import io.jsonwebtoken.JwtException;
-import io.jsonwebtoken.SignatureAlgorithm;
+import io.jsonwebtoken.*;
 import io.jsonwebtoken.security.Keys;
 import jakarta.annotation.PostConstruct;
 import lombok.Data;
@@ -61,4 +58,14 @@ public class JwtUtil {
         }
         return false;
     }
+
+    public <T> T getClaim(String token, String claimKey, Class<T> type) {
+        Claims claims = Jwts.parserBuilder()
+                .setSigningKey(key)
+                .build()
+                .parseClaimsJws(token)
+                .getBody();
+        return claims.get(claimKey, type);
+    }
 }
+
