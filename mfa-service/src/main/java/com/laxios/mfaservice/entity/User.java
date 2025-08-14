@@ -24,7 +24,7 @@ public class User {
     private UUID id;
 
     @Column(nullable = false, unique = true)
-    private String key;
+    private String userKey;
 
     @Column(nullable = false)
     private String name;
