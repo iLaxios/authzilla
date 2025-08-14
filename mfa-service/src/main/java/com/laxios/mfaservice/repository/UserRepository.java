@@ -1,6 +1,6 @@
 package com.laxios.mfaservice.repository;
 
-import com.laxios.mfaservice.entity.Users;
+import com.laxios.mfaservice.entity.User;
 import org.springframework.data.jpa.repository.JpaRepository;
 import org.springframework.stereotype.Repository;
 
@@ -8,8 +8,8 @@ import java.util.Optional;
 import java.util.UUID;
 
 @Repository
-public interface UsersRepository extends JpaRepository<Users, UUID> {
+public interface UserRepository extends JpaRepository<User, UUID> {
 
-    Optional<Users> findById(UUID id);
+    Optional<User> findById(UUID id);
     boolean existsById(UUID id);
 }

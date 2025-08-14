@@ -17,7 +17,7 @@ import java.util.UUID;
 @Builder
 @Entity
 @Table(name = "users")
-public class Users {
+public class User {
 
     @Id
     @Column(nullable = false, unique = true)
